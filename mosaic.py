@@ -29,9 +29,12 @@ class SpotifyMosaic:
         next_url = SpotifyMosaic.uri_to_api(playlist)
         while next_url is not None:
             logging.info("Sending request to playlist API.")
-            r = requests.get(next_url, headers=headers).json()
-            album_ids = [*album_ids, *[item["track"]["album"]["id"] for item in r["items"]]]
-            next_url = r["next"]
+            r = requests.get(next_url, headers=headers)
+            if r.status_code != 200:
+                logging.critical("Playlist not found.")
+                sys.exit()
+            album_ids = [*album_ids, *[item["track"]["album"]["id"] for item in r.json()["items"]]]
+            next_url = r.json()["next"]
         logging.info("Album ids obtained.")
         return list(dict.fromkeys(album_ids))
 
@@ -88,8 +91,11 @@ class SpotifyMosaic:
 
     @staticmethod
     def uri_to_api(uri):
-        """Generate a dict containing playlist based on Spotify Playlist URI"""
+        """Generate link to playlist endpoint based on Spotify Playlist URI"""
         m = re.match("^spotify:user:(.+?):playlist:(.+?)$", uri)
+        if m is None:
+            logging.critical("Incorrect playlist URI.")
+            sys.exit()
         return "https://api.spotify.com/v1/users/{}/playlists/{}/tracks".format(m.group(1), m.group(2))
 
     @property
