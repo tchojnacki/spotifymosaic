@@ -112,12 +112,14 @@ if __name__ == "__main__":
     parser.add_argument("spotifysecret", help="Spotify API Client Secret")
     parser.add_argument("playlist", help="Spotify playlist URI")
 
-    parser.add_argument("-s", "--size", help="number of artworks per mosaic row",
+    parser.add_argument("-t", "--tiles", help="number of artworks per mosaic row",
                         type=int, default=2)
     parser.add_argument("-o", "--out", help="output file",
                         default="mosaic.png")
-    parser.add_argument("-r", "--shuffle", help="randomize the order of artworks",
+    parser.add_argument("-s", "--shuffle", help="randomize the order of artworks",
                         action="store_true")
+    parser.add_argument("-r", "--resolution", help="select the resolution of one artwork",
+                        type=int, default=640, choices=[64, 300, 640])
 
     args = parser.parse_args()
 
@@ -126,4 +128,4 @@ if __name__ == "__main__":
         "secret": args.spotifysecret
     })
 
-    mosaic.create(args.playlist, size=args.size, output=args.out, shuffle=args.shuffle)
+    mosaic.create(args.playlist, size=args.tiles, output=args.out, shuffle=args.shuffle)
