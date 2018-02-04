@@ -75,7 +75,11 @@ class SpotifyMosaic:
         current_image = 0
         for x in range(tiles):
             for y in range(tiles):
-                new_image.paste(images[current_image], (x * resolution, y * resolution))
+                try:
+                    new_image.paste(images[current_image], (x * resolution, y * resolution))
+                except MemoryError:
+                    logging.critical("Python ran out of memory when pasting %s/%s", current_image+1, len(images))
+                    sys.exit()
                 current_image += 1
         if output is None:
             return new_image
