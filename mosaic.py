@@ -30,17 +30,19 @@ class SpotifyMosaic:
             next_url = r["next"]
         return list(dict.fromkeys(album_ids))
 
-    def get_artworks(self, album_ids):
+    def get_artworks(self, album_ids, resolution=640):
         """Get artworks for a list of albums"""
         url = "https://api.spotify.com/v1/albums/"
         headers = {
             "Authorization": self.token
         }
+        resolution_dict = dict([(640, 0), (300, 1), (64, 2)])
+        resolution = resolution_dict[resolution]
         album_ids = [album_ids[i:i + 20] for i in range(0, len(album_ids), 20)]
         images = []
         for chunk in album_ids:
             r = requests.get(url, headers=headers, params={"ids": ",".join(chunk)})
-            images = [*images, *[album["images"][0]["url"] for album in r.json()["albums"]]]
+            images = [*images, *[album["images"][resolution]["url"] for album in r.json()["albums"]]]
         return images
 
     def download_artworks(self, artworks, directory="images/"):
@@ -55,31 +57,30 @@ class SpotifyMosaic:
             "images": images
         }
 
-    def generate_mosaic(self, artworks, size=2, output="mosaic.png", shuffle=False):
+    def generate_mosaic(self, artworks, size=2, output="mosaic.png", shuffle=False, resolution=640):
         """Generate a mosaic based on artworks list"""
-        ARTWORK_SIZE = 640
         if shuffle is True:
             random.shuffle(artworks)
         max_tiles = math.floor(math.sqrt(len(artworks)))
         tiles = min(size, max_tiles)
         artworks = artworks[:tiles**2]
         images = [Image.open(requests.get(artwork, stream=True).raw) for artwork in artworks]
-        new_image = Image.new('RGB', (tiles * ARTWORK_SIZE, tiles * ARTWORK_SIZE))
+        new_image = Image.new('RGB', (tiles * resolution, tiles * resolution))
         current_image = 0
         for x in range(tiles):
             for y in range(tiles):
-                new_image.paste(images[current_image], (x * ARTWORK_SIZE, y * ARTWORK_SIZE))
+                new_image.paste(images[current_image], (x * resolution, y * resolution))
                 current_image += 1
         if output is None:
             return new_image
         new_image.save(output)
         return output
 
-    def create(self, playlist, size=2, output="mosaic.png", shuffle=False):
+    def create(self, playlist, size=2, output="mosaic.png", shuffle=False, resolution=640):
         """Generate a mosaic from playlist"""
         albums = self.get_albums(playlist)
-        artworks = self.get_artworks(albums)
-        return self.generate_mosaic(artworks, size=size, output=output, shuffle=shuffle)
+        artworks = self.get_artworks(albums, resolution=resolution)
+        return self.generate_mosaic(artworks, size=size, output=output, shuffle=shuffle, resolution=resolution)
 
     @staticmethod
     def uri_to_api(uri):
@@ -128,4 +129,4 @@ if __name__ == "__main__":
         "secret": args.spotifysecret
     })
 
-    mosaic.create(args.playlist, size=args.tiles, output=args.out, shuffle=args.shuffle)
+    mosaic.create(args.playlist, size=args.tiles, output=args.out, shuffle=args.shuffle, resolution=args.resolution)
