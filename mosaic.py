@@ -6,6 +6,7 @@ import random
 import argparse
 import logging
 import sys
+from multiprocessing.dummy import Pool
 import requests
 from PIL import Image
 
@@ -62,7 +63,10 @@ class SpotifyMosaic:
         artworks = artworks[:tiles**2]
 
         logging.info("Requesting images.")
-        images = [Image.open(requests.get(artwork, stream=True).raw) for artwork in artworks]
+
+        with Pool(16) as p:
+            images = p.map(lambda artwork: Image.open(requests.get(artwork, stream=True).raw), artworks)
+
         logging.info("Creating image.")
         new_image = Image.new("RGB", (tiles * resolution, tiles * resolution))
         current_image = 0
