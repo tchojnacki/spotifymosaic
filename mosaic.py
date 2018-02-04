@@ -94,8 +94,10 @@ class SpotifyMosaic:
         """Generate link to playlist endpoint based on Spotify Playlist URI"""
         m = re.match("^spotify:user:(.+?):playlist:(.+?)$", uri)
         if m is None:
-            logging.critical("Incorrect playlist URI.")
-            sys.exit()
+            m = re.match("^https?:\/\/open\.spotify\.com\/user\/(.+?)\/playlist\/(.+?)($|\?)", uri)
+            if m is None:
+                logging.critical("Incorrect playlist URI.")
+                sys.exit()
         return "https://api.spotify.com/v1/users/{}/playlists/{}/tracks".format(m.group(1), m.group(2))
 
     @property
