@@ -2,7 +2,6 @@
 import base64
 import re
 import math
-import urllib.request
 import random
 import argparse
 import requests
@@ -44,18 +43,6 @@ class SpotifyMosaic:
             r = requests.get(url, headers=headers, params={"ids": ",".join(chunk)})
             images = [*images, *[album["images"][resolution]["url"] for album in r.json()["albums"]]]
         return images
-
-    def download_artworks(self, artworks, directory="images/"):
-        """Download artworks from urls"""
-        images = []
-        for index, artwork in enumerate(artworks):
-            urllib.request.urlretrieve(artwork, (directory + "{}.png").format(index))
-            images.append((directory + "{}.png").format(index))
-        return {
-            "directory": directory,
-            "length": len(images),
-            "images": images
-        }
 
     def generate_mosaic(self, artworks, size=2, output="mosaic.jpg", shuffle=False, resolution=640):
         """Generate a mosaic based on artworks list"""
