@@ -57,7 +57,7 @@ class SpotifyMosaic:
             "images": images
         }
 
-    def generate_mosaic(self, artworks, size=2, output="mosaic.png", shuffle=False, resolution=640):
+    def generate_mosaic(self, artworks, size=2, output="mosaic.jpg", shuffle=False, resolution=640):
         """Generate a mosaic based on artworks list"""
         if shuffle is True:
             random.shuffle(artworks)
@@ -76,7 +76,7 @@ class SpotifyMosaic:
         new_image.save(output)
         return output
 
-    def create(self, playlist, size=2, output="mosaic.png", shuffle=False, resolution=640):
+    def create(self, playlist, size=2, output="mosaic.jpg", shuffle=False, resolution=640):
         """Generate a mosaic from playlist"""
         albums = self.get_albums(playlist)
         artworks = self.get_artworks(albums, resolution=resolution)
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--tiles", help="number of artworks per mosaic row",
                         type=int, default=2)
     parser.add_argument("-o", "--out", help="output file",
-                        default="mosaic.png")
+                        default="mosaic.jpg")
     parser.add_argument("-s", "--shuffle", help="randomize the order of artworks",
                         action="store_true")
     parser.add_argument("-r", "--resolution", help="select the resolution of one artwork",
