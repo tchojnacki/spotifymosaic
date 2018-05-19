@@ -1,4 +1,4 @@
-"""CMD utility to for SpotifyMosaic"""
+"""CMD utility for SpotifyMosaic"""
 import argparse
 import logging
 from main import SpotifyMosaic
