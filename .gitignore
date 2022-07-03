@@ -47,5 +47,5 @@ Temporary Items
 .apdisk
 
 # SpotifyMosaic
-__pycache__
 mosaic.jpg
+/target
