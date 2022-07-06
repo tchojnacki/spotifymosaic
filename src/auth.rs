@@ -1,7 +1,7 @@
 use rspotify::{clients::BaseClient, ClientCredsSpotify, Credentials};
 
-pub async fn auth_with_credentials(credentials: &str) -> Result<impl BaseClient, &'static str> {
-    let (id, secret) = credentials
+pub async fn auth_with_client_creds(creds_str: &str) -> Result<impl BaseClient, &'static str> {
+    let (id, secret) = creds_str
         .split_once(':')
         .ok_or("Invalid credentials format")?;
 

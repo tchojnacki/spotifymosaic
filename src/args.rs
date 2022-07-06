@@ -5,6 +5,7 @@ use std::path::PathBuf;
 #[derive(Debug, Clone, ArgEnum)]
 pub enum TileArrangement {
     First,
+    Last,
     Random,
 }
 
@@ -29,9 +30,9 @@ pub struct CliArgs {
     /// Spotify client's ID and secret delimited by a colon
     pub credentials: String,
 
-    #[clap(short, long = "tiles", value_parser = value_parser!(u8).range(1..=100), default_value_t = 2)]
+    #[clap(short, long = "tiles", value_parser = value_parser!(u32).range(1..=128), default_value_t = 2)]
     /// Mosaic's side length
-    pub tile_count: u8,
+    pub tile_side_len: u32,
 
     #[clap(short, long = "out", value_parser, default_value = "mosaic.png")]
     /// Output image file path
@@ -47,9 +48,9 @@ pub struct CliArgs {
     /// Order of mosaic's squares
     pub arrangement: TileArrangement,
 
-    #[clap(short, long = "res", value_parser = value_parser!(u16).range(16..=4096), default_value_t = 640)]
+    #[clap(short, long = "res", value_parser = value_parser!(u32).range(16..=4096), default_value_t = 640)]
     /// Output image's resolution
-    pub resolution: u16,
+    pub resolution: u32,
 
     #[clap(short, long, value_parser)]
     /// Print all logs
