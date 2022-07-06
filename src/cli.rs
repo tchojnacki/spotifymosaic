@@ -1,6 +1,8 @@
 use crate::args::{CliArgs, TileArrangement};
 use crate::auth::auth_with_client_creds;
 use futures::{pin_mut, TryStreamExt};
+use image::imageops::{self, FilterType};
+use image::RgbaImage;
 use rand::prelude::SliceRandom;
 use rand::thread_rng;
 use rspotify::{
@@ -17,6 +19,7 @@ pub async fn run(args: CliArgs) -> Result<(), &'static str> {
         &args.playlist_uri,
         args.tile_side_len,
         args.arrangement,
+        args.resolution,
     )
     .await?;
 
@@ -92,6 +95,7 @@ async fn generate_mosaic(
     playlist_uri: &str,
     tile_side_len: u32,
     arrangement: TileArrangement,
+    resolution: u32,
 ) -> Result<(), &'static str> {
     let playlist_id = PlaylistId::from_uri(playlist_uri).or(Err("Invalid playlist URI!"))?;
     let albums = get_playlist_unique_albums(client, &playlist_id).await?;
@@ -99,7 +103,28 @@ async fn generate_mosaic(
     let albums = arrange_albums(albums, tile_side_len.pow(2) as usize, arrangement);
     let urls = select_cover_urls(albums);
 
-    dbg!(urls);
+    let tile_resolution = resolution / tile_side_len;
+
+    let mut image = RgbaImage::new(resolution, resolution);
+
+    for (index, url) in urls.iter().enumerate() {
+        let index = index as u32;
+        let (x, y) = (index % tile_side_len, index / tile_side_len);
+
+        let cover =
+            image::load_from_memory(&reqwest::get(url).await.unwrap().bytes().await.unwrap())
+                .unwrap()
+                .resize(tile_resolution, tile_resolution, FilterType::Triangle);
+
+        imageops::overlay(
+            &mut image,
+            &cover,
+            (x * tile_resolution).into(),
+            (y * tile_resolution).into(),
+        );
+    }
+
+    image.save("mosaic.png").unwrap();
 
     Ok(())
 }
