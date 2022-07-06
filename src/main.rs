@@ -1,4 +1,6 @@
 use clap::{clap_derive::ArgEnum, value_parser, AppSettings, ArgGroup, Parser};
+use rspotify::{ClientCredsSpotify, Credentials};
+use spotifymosaic::generate_mosaic;
 use std::path::PathBuf;
 
 #[non_exhaustive]
@@ -56,7 +58,31 @@ struct CliArgs {
     pub verbose: bool,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let args = CliArgs::parse();
     println!("{:?}", args);
+
+    if let Err(msg) = run(args).await {
+        eprintln!("{}", msg);
+    }
+}
+
+async fn run(args: CliArgs) -> Result<(), &'static str> {
+    let (id, secret) = args
+        .credentials
+        .split_once(':')
+        .ok_or("Invalid credentials format")?;
+
+    let creds = Credentials::new(id, secret);
+    let mut client = ClientCredsSpotify::new(creds);
+
+    client
+        .request_token()
+        .await
+        .or(Err("Authentication failed!"))?;
+
+    generate_mosaic(&client, &args.playlist_uri).await.unwrap();
+
+    Ok(())
 }
