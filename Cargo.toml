@@ -1,0 +1,13 @@
+[package]
+name = "spotifymosaic"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "3.2.8", features = ["derive"] }
+futures = "0.3.21"
+image = "0.24.2"
+rand = "0.8.5"
+reqwest = "0.11.11"
+rspotify = "0.11.5"
+tokio = { version = "1.19.2", features = ["macros", "rt-multi-thread"] }
