@@ -14,7 +14,7 @@ use std::collections::HashSet;
 pub async fn run(args: CliArgs) -> Result<(), &'static str> {
     let client = auth_with_client_creds(&args.credentials).await?;
 
-    generate_mosaic(
+    let image = generate_mosaic(
         &client,
         &args.playlist_uri,
         args.tile_side_len,
@@ -22,6 +22,10 @@ pub async fn run(args: CliArgs) -> Result<(), &'static str> {
         args.resolution,
     )
     .await?;
+
+    image
+        .save(args.output_path)
+        .or(Err("Could not save the image!"))?;
 
     Ok(())
 }
@@ -96,7 +100,7 @@ async fn generate_mosaic(
     tile_side_len: u32,
     arrangement: TileArrangement,
     resolution: u32,
-) -> Result<(), &'static str> {
+) -> Result<RgbaImage, &'static str> {
     let playlist_id = PlaylistId::from_uri(playlist_uri).or(Err("Invalid playlist URI!"))?;
     let albums = get_playlist_unique_albums(client, &playlist_id).await?;
     let tile_side_len = tile_side_len.min((albums.len() as f64).sqrt() as u32);
@@ -111,10 +115,16 @@ async fn generate_mosaic(
         let index = index as u32;
         let (x, y) = (index % tile_side_len, index / tile_side_len);
 
-        let cover =
-            image::load_from_memory(&reqwest::get(url).await.unwrap().bytes().await.unwrap())
-                .unwrap()
-                .resize(tile_resolution, tile_resolution, FilterType::Triangle);
+        let cover = image::load_from_memory(
+            &reqwest::get(url)
+                .await
+                .or(Err("Could not download one of the covers!"))?
+                .bytes()
+                .await
+                .or(Err("Could not convert one of the covers to bytes!"))?,
+        )
+        .or(Err("Could not parse one of the covers!"))?
+        .resize(tile_resolution, tile_resolution, FilterType::Triangle);
 
         imageops::overlay(
             &mut image,
@@ -124,7 +134,5 @@ async fn generate_mosaic(
         );
     }
 
-    image.save("mosaic.png").unwrap();
-
-    Ok(())
+    Ok(image)
 }

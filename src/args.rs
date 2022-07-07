@@ -51,10 +51,6 @@ pub struct CliArgs {
     #[clap(short, long = "res", value_parser = value_parser!(u32).range(16..=4096), default_value_t = 640)]
     /// Output image's resolution
     pub resolution: u32,
-
-    #[clap(short, long, value_parser)]
-    /// Print all logs
-    pub verbose: bool,
 }
 
 pub fn parse_args() -> CliArgs {
