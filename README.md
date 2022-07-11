@@ -1,4 +1,7 @@
 # Mosaics for Spotify
+[![crates.io](https://img.shields.io/crates/v/spotifymosaic)](https://crates.io/crates/spotifymosaic)
+[![](https://img.shields.io/crates/l/spotifymosaic)](./LICENSE.md)
+
 A CLI tool for generating Spotify playlist covers using album artworks.
 
 ## Examples
@@ -34,7 +37,14 @@ The generated cover can be blurred with `--blur <PERCENTAGE>` to reduce visual c
 | ![](./.github/img/b5.png) | ![](./.github/img/b25.png) | ![](./.github/img/b100.png) |
 
 ## Installation
-### Build from sources
+> **NOTE:** All of the current methods of installation require an installation of [Rust](https://www.rust-lang.org/tools/install). Precompiled binaries may be shipped in the future.
+
+### From crates.io
+```
+cargo install spotifymosaic
+```
+
+### From GitHub
 ```
 git clone https://github.com/tchojnacki/spotifymosaic.git
 cargo install --path spotifymosaic
@@ -51,9 +61,10 @@ Where:
 - `[AUTHORIZATION]` - any form of authorization, described below
 
 ### Authorization
+> **NOTE:** The tool requires authorization, so you should create an app following the [Spotify App Settings Guide](https://developer.spotify.com/documentation/general/guides/authorization/app-settings/).
+
 #### Argument Client Credentials Flow
-Currently, the only supported form of authorization is passing the `client_id` and `client_secret` from the [Spotify Client Credentials Flow](https://developer.spotify.com/documentation/general/guides/authorization/client-credentials/) through the `--creds <CLIENT_ID:CLIENT_SECRET>` argument.
-You should generate yourself a pair of id and secret, following the [Spotify App Settings Guide](https://developer.spotify.com/documentation/general/guides/authorization/app-settings/), and pass them as a CLI argument, separated by a colon (`:`).
+Currently, the only supported form of authorization is passing the `client_id` and `client_secret` from the [Spotify Client Credentials Flow](https://developer.spotify.com/documentation/general/guides/authorization/client-credentials/). Generate a pair of id and secret and pass them to the `--creds` CLI argument, separated by a colon (`:`).
 
 ### Help
 ```
