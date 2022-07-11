@@ -2,7 +2,7 @@ use clap::{clap_derive::ArgEnum, value_parser, AppSettings, ArgGroup, Parser};
 use std::path::PathBuf;
 
 #[non_exhaustive]
-#[derive(Debug, Clone, ArgEnum)]
+#[derive(Debug, Clone, Copy, ArgEnum)]
 pub enum TileArrangement {
     First,
     Last,
@@ -51,6 +51,10 @@ pub struct CliArgs {
     #[clap(short, long = "res", value_parser = value_parser!(u32).range(16..=4096), default_value_t = 640)]
     /// Output image's resolution, may be rounded down
     pub resolution: u32,
+
+    #[clap(short, long, value_parser = value_parser!(u32).range(0..=100), value_name = "PERCENTAGE", default_value_t = 0)]
+    /// Amount of blur applied to cover images
+    pub blur: u32,
 }
 
 pub fn parse_args() -> CliArgs {
