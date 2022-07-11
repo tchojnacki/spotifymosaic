@@ -40,3 +40,14 @@ pub async fn generate_mosaic(urls: Vec<String>, resolution: u32) -> Result<RgbIm
 
     Ok(image)
 }
+
+pub fn blur_mosaic(image: RgbImage, coefficient: f32, tile_count: u32) -> RgbImage {
+    let tile_side_len = (tile_count as f32).sqrt();
+    let img_resolution = image.dimensions().0 as f32;
+
+    if coefficient.abs() < f32::EPSILON {
+        image
+    } else {
+        imageops::blur(&image, (img_resolution / tile_side_len) * 0.5 * coefficient)
+    }
+}
