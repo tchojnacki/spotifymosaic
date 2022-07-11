@@ -1,6 +1,6 @@
 [package]
 name = "spotifymosaic"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Tomasz Chojnacki <tomaszchojnacki2001@gmail.com>"]
 edition = "2021"
 description = "A CLI tool for generating Spotify playlist covers using album artworks."
