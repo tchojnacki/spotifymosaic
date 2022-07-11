@@ -1,7 +1,14 @@
 [package]
 name = "spotifymosaic"
-version = "0.1.0"
+version = "0.2.0"
+authors = ["Tomasz Chojnacki <tomaszchojnacki2001@gmail.com>"]
 edition = "2021"
+description = "A CLI tool for generating Spotify playlist covers using album artworks."
+homepage = "https://github.com/tchojnacki/spotifymosaic"
+repository = "https://github.com/tchojnacki/spotifymosaic"
+license = "MIT"
+keywords = ["spotify", "cli"]
+categories = ["command-line-utilities", "multimedia::images"]
 
 [dependencies]
 clap = { version = "3.2.8", features = ["derive"] }

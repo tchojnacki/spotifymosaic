@@ -1,4 +1,11 @@
-use spotifymosaic::{parse_args, run};
+mod api;
+mod args;
+mod auth;
+mod cli;
+mod images;
+
+use args::parse_args;
+use cli::run;
 
 #[tokio::main]
 async fn main() {
