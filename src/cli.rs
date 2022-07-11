@@ -1,7 +1,7 @@
 use crate::args::{CliArgs, TileArrangement};
 use crate::auth::auth_with_client_creds;
 use futures::{pin_mut, TryStreamExt};
-use image::imageops::{self, FilterType};
+use image::imageops;
 use image::RgbImage;
 use rand::prelude::SliceRandom;
 use rand::thread_rng;
@@ -124,7 +124,11 @@ async fn generate_mosaic(
                 .or(Err("Could not convert one of the covers to bytes!"))?,
         )
         .or(Err("Could not parse one of the covers!"))?
-        .resize(tile_resolution, tile_resolution, FilterType::Triangle)
+        .resize(
+            tile_resolution,
+            tile_resolution,
+            imageops::FilterType::Triangle,
+        )
         .into_rgb8();
 
         imageops::overlay(
@@ -134,6 +138,9 @@ async fn generate_mosaic(
             (y * tile_resolution).into(),
         );
     }
+
+    let resolution = tile_resolution * tile_side_len;
+    let image = imageops::crop_imm(&image, 0, 0, resolution, resolution).to_image();
 
     Ok(image)
 }
