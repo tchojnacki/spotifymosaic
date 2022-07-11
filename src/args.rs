@@ -2,7 +2,7 @@ use clap::{clap_derive::ArgEnum, value_parser, AppSettings, ArgGroup, Parser};
 use std::path::PathBuf;
 
 #[non_exhaustive]
-#[derive(Debug, Clone, ArgEnum)]
+#[derive(Debug, Clone, Copy, ArgEnum)]
 pub enum TileArrangement {
     First,
     Last,
@@ -31,7 +31,7 @@ pub struct CliArgs {
     pub credentials: String,
 
     #[clap(short, long = "tiles", value_parser = value_parser!(u32).range(1..=128), default_value_t = 2)]
-    /// Mosaic's side length
+    /// Number of tiles forming the mosaic's side
     pub tile_side_len: u32,
 
     #[clap(short, long = "out", value_parser, default_value = "mosaic.png")]
@@ -45,12 +45,16 @@ pub struct CliArgs {
         value_parser,
         default_value_t = TileArrangement::First
     )]
-    /// Order of mosaic's squares
+    /// Ordering of mosaic's squares
     pub arrangement: TileArrangement,
 
     #[clap(short, long = "res", value_parser = value_parser!(u32).range(16..=4096), default_value_t = 640)]
-    /// Output image's resolution
+    /// Output image's resolution, may be rounded down
     pub resolution: u32,
+
+    #[clap(short, long, value_parser = value_parser!(u32).range(0..=100), value_name = "PERCENTAGE", default_value_t = 0)]
+    /// Amount of blur applied to cover images
+    pub blur: u32,
 }
 
 pub fn parse_args() -> CliArgs {
