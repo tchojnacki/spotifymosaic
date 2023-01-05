@@ -10,7 +10,7 @@ use std::collections::HashSet;
 
 async fn get_playlist_unique_albums(
     client: &impl BaseClient,
-    playlist_id: &PlaylistId,
+    playlist_id: PlaylistId<'_>,
 ) -> Result<Vec<SimplifiedAlbum>, &'static str> {
     let mut albums = Vec::new();
     let mut used_ids = HashSet::new();
@@ -57,7 +57,7 @@ fn arrange_albums(
 }
 
 #[must_use]
-fn select_cover_urls(albums: Vec<SimplifiedAlbum>) -> Vec<String> {
+fn select_cover_urls(albums: &[SimplifiedAlbum]) -> Vec<String> {
     albums
         .iter()
         .map(|album| {
@@ -79,10 +79,10 @@ pub async fn get_cover_urls(
     arrangement: TileArrangement,
 ) -> Result<Vec<String>, &'static str> {
     let playlist_id = PlaylistId::from_uri(playlist_uri).or(Err("Invalid playlist URI!"))?;
-    let albums = get_playlist_unique_albums(client, &playlist_id).await?;
+    let albums = get_playlist_unique_albums(client, playlist_id).await?;
     let tile_side_len = tile_side_len.min((albums.len() as f64).sqrt() as u32);
     let albums = arrange_albums(albums, tile_side_len.pow(2) as usize, arrangement);
-    let urls = select_cover_urls(albums);
+    let urls = select_cover_urls(&albums);
 
     Ok(urls)
 }
